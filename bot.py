@@ -1,12 +1,14 @@
-from flask import Flask, request, Response
-from twilio.twiml.messaging_response import MessagingResponse
-from twilio.twiml.voice_response import VoiceResponse
-from twilio.rest import Client
-from db import init_db, get_messages, insert_message
-import os, requests
-import openai
+import os
+import requests
 
 from dotenv import load_dotenv
+from flask import Flask, request, Response
+from twilio.rest import Client
+from twilio.twiml.messaging_response import MessagingResponse
+from twilio.twiml.voice_response import VoiceResponse
+
+from db import init_db, get_messages, insert_message
+import openai
 
 load_dotenv()
 
@@ -17,6 +19,17 @@ client = Client(os.getenv("TWILIO_ACCOUNT_SID"), os.getenv("TWILIO_AUTH_TOKEN"))
 
 
 def query_gpt3(text: str, history: list[tuple]) -> str:
+    """
+    Sends a text message to GPT-3 and gets a response.
+
+    Args:
+        text (str): The user's text message to GPT-3.
+        history (List[Tuple]): The conversation history.
+
+    Returns:
+        str: The response from GPT-3.
+    """
+
     _messages = [{"role": h[2], "content": h[3]} for h in history]
     _messages.insert(
         0,
@@ -37,7 +50,14 @@ def query_gpt3(text: str, history: list[tuple]) -> str:
 
 
 @app.route("/sms", methods=["GET", "POST"])
-def chatgpt():
+def chatgpt() -> str:
+    """
+    Handles incoming SMS messages.
+
+    Returns:
+        str: The response message to send back to the user.
+    """
+
     in_msg = request.form["Body"].lower()
     out_msg = query_gpt3(in_msg, get_messages(request.form["From"]))
 
@@ -51,7 +71,14 @@ def chatgpt():
 
 
 @app.route("/inbound/voice/call", methods=["POST"])
-def incoming_voice_call():
+def incoming_voice_call() -> str:
+    """
+    Handles incoming voice calls.
+
+    Returns:
+        str: The response message to send back to the user.
+    """
+
     response = VoiceResponse(action="/recording/callback", method="POST")
     response.record(
         recording_status_callback="/recording/callback",
@@ -62,7 +89,14 @@ def incoming_voice_call():
 
 
 @app.route("/recording/callback", methods=["GET", "POST"])
-def upload_recording():
+def upload_recording() -> Response:
+    """
+    Handles the recorded audio from a voice call.
+
+    Returns:
+        Response: The HTTP response to send back to Twilio.
+    """
+
     call_object = client.calls(request.form["CallSid"]).fetch()
 
     recording_url = f"{request.values['RecordingUrl']}.mp3"
