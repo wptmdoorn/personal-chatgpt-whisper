@@ -1,5 +1,7 @@
 # Personal SMS and Call Assistant
 
+<p align="center"><img src="https://user-images.githubusercontent.com/26939682/224476548-6e29835c-b85d-4f03-bbdd-ad0009b04411.PNG" width="25%"/> <img src="https://user-images.githubusercontent.com/26939682/224476640-699ac1e9-c742-4a94-bc04-bb3292a96974.PNG" width="25%"/> <img src="https://user-images.githubusercontent.com/26939682/224476641-69ed2a36-0012-436c-818e-2a3d059c7c0a.PNG" width="25%"/></p>
+
 This project is a personal SMS and Call assistant that allows you to communicate through text messages and calls using speech-to-text technology. It uses Twilio to handle incoming SMS and calls, OpenAI to generate responses to incoming messages, Whisper to convert incoming calls to text, and Flask to create a web application. It uses a SQLite3 database to store messages for each number, hereby remembering previous conversations. 
 
 ## Installation
